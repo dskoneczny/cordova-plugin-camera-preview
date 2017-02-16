@@ -52,6 +52,9 @@ class Preview extends RelativeLayout implements SurfaceHolder.Callback {
         if (mCamera != null) {
             mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
             setCameraDisplayOrientation();
+            Camera.Parameters params = mCamera.getParameters();
+            params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            mCamera.setParameters(params);
             //mCamera.getParameters().setRotation(getDisplayOrientation());
             //requestLayout();
         }
@@ -243,6 +246,15 @@ class Preview extends RelativeLayout implements SurfaceHolder.Callback {
                 }
             }
         }
+
+        optimalSize = sizes.get(0);
+        for(int i=0;i<sizes.size();i++)
+        {
+            if(sizes.get(i).width > optimalSize.width)
+                optimalSize = sizes.get(i);
+        }
+
+
 
         Log.d(TAG, "optimal preview size: w: " + optimalSize.width + " h: " + optimalSize.height);
         return optimalSize;

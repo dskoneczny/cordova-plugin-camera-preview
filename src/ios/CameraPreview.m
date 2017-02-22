@@ -125,43 +125,44 @@
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void) setFlashMode:(CDVInvokedUrlCommand*)command {
-  NSLog(@"Flash Mode");
-  CDVPluginResult *pluginResult;
-
-  NSInteger flashMode;
-  NSString *errMsg;
-
-  if (command.arguments.count <= 0)
-  {
-    errMsg = @"Please specify a flash mode";
+private boolean setFlashMode(final JSONArray args, CallbackContext callbackContext) {
+  if (fragment == null) {
+    return false;
   }
-  else
-  {
-    NSString *strFlashMode = [command.arguments objectAtIndex:0];
-    flashMode = [strFlashMode integerValue];
-    if (flashMode != AVCaptureFlashModeOff
-        && flashMode != AVCaptureFlashModeOn
-        && flashMode != AVCaptureFlashModeAuto)
-    {
-      errMsg = @"Invalid parameter";
+
+  Camera camera = fragment.getCamera();
+  if (camera == null) {
+    return false;
+  }
+
+  Camera.Parameters params = camera.getParameters();
+  params.getSupportedFlashModes();
+  try {
+    int mode = (int) args.getInt(0);
+
+    switch(mode) {
+      case 0:
+        params.setFlashMode(params.FLASH_MODE_OFF);
+        break;
+      case 1:
+        params.setFlashMode(params.FLASH_MODE_ON);
+        break;
+      case 2:
+        params.setFlashMode(params.FLASH_MODE_TORCH);
+        break;
+      case 3:
+        params.setFlashMode(params.FLASH_MODE_AUTO);
+        break;
     }
 
+    fragment.setCameraParameters(params);
+
+    return true;
+  } catch (Exception e) {
+    e.printStackTrace();
+
+    return false;
   }
-
-  if (errMsg) {
-    NSLog(@"%@", errMsg);
-
-  } else {
-    if (self.sessionManager != nil) {
-      [self.sessionManager setFlashMode:flashMode];
-      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    } else {
-      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Camera not started"];
-    }
-  }
-
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void) takePicture:(CDVInvokedUrlCommand*)command {

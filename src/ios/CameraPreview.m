@@ -125,26 +125,43 @@
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-private boolean setFlashMode(final JSONArray args, CallbackContext callbackContext) {
-  if (fragment == null) {
-    return false;
-  }
+- (void) setFlashMode:(CDVInvokedUrlCommand*)command {
+  NSLog(@"Flash Mode");
+  CDVPluginResult *pluginResult;
 
-  Camera camera = fragment.getCamera();
-  if (camera == null) {
-    return false;
-  }
+  NSInteger flashMode;
+  NSString *errMsg;
 
+  if (command.arguments.count <= 0)
+  {
+    errMsg = @"Please specify a flash mode";
+  }
+  else
+  {
+    NSString *strFlashMode = [command.arguments objectAtIndex:0];
+    flashMode = [strFlashMode integerValue];
+    if (flashMode != AVCaptureFlashModeOff
+        && flashMode != AVCaptureFlashModeOn
+        && flashMode != AVCaptureFlashModeAuto)
+    {
+      errMsg = @"Invalid parameter";
     }
 
-    fragment.setCameraParameters(params);
-
-    return true;
-  } catch (Exception e) {
-    e.printStackTrace();
-
-    return false;
   }
+
+  if (errMsg) {
+    NSLog(@"%@", errMsg);
+
+  } else {
+    if (self.sessionManager != nil) {
+      [self.sessionManager setFlashMode:flashMode];
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    } else {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Camera not started"];
+    }
+  }
+
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void) takePicture:(CDVInvokedUrlCommand*)command {

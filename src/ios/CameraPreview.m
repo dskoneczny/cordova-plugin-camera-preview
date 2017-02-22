@@ -135,24 +135,6 @@ private boolean setFlashMode(final JSONArray args, CallbackContext callbackConte
     return false;
   }
 
-  Camera.Parameters params = camera.getParameters();
-  params.getSupportedFlashModes();
-  try {
-    int mode = (int) args.getInt(0);
-
-    switch(mode) {
-      case 0:
-        params.setFlashMode(params.FLASH_MODE_OFF);
-        break;
-      case 1:
-        params.setFlashMode(params.FLASH_MODE_ON);
-        break;
-      case 2:
-        params.setFlashMode(params.FLASH_MODE_TORCH);
-        break;
-      case 3:
-        params.setFlashMode(params.FLASH_MODE_AUTO);
-        break;
     }
 
     fragment.setCameraParameters(params);

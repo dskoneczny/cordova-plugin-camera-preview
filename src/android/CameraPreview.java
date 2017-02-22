@@ -266,17 +266,43 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
   }
 
   private boolean setFlashMode(final JSONArray args, CallbackContext callbackContext) {
-    if(fragment == null){
+    if (fragment == null) {
       return false;
     }
+
+    Camera camera = fragment.getCamera();
+    if (camera == null) {
+      return false;
+    }
+
+    Camera.Parameters params = camera.getParameters();
+    params.getSupportedFlashModes();
     try {
-      fragment.setFlashMode(args.getInt(0));
-    }
-    catch(Exception e){
+      int mode = (int) args.getInt(0);
+
+      switch(mode) {
+        case 0:
+          params.setFlashMode(params.FLASH_MODE_OFF);
+          break;
+        case 1:
+          params.setFlashMode(params.FLASH_MODE_ON);
+          break;
+        case 2:
+          params.setFlashMode(params.FLASH_MODE_TORCH);
+          break;
+        case 3:
+          params.setFlashMode(params.FLASH_MODE_AUTO);
+          break;
+      }
+
+      fragment.setCameraParameters(params);
+
+      return true;
+    } catch (Exception e) {
       e.printStackTrace();
+
       return false;
     }
-    return true;
   }
 
   private boolean setOnPictureTakenHandler(JSONArray args, CallbackContext callbackContext) {

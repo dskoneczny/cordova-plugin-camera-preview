@@ -47,18 +47,24 @@ class Preview extends RelativeLayout implements SurfaceHolder.Callback {
     }
 
     public void setCamera(Camera camera, int cameraId) {
-        mCamera = camera;
-        this.cameraId = cameraId;
-        if (mCamera != null) {
-            mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-            setCameraDisplayOrientation();
-            Camera.Parameters params = mCamera.getParameters();
-            params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-            mCamera.setParameters(params);
-            //mCamera.getParameters().setRotation(getDisplayOrientation());
-            //requestLayout();
-        }
-    }
+       mCamera = camera;
+       this.cameraId = cameraId;
+       if (mCamera != null) {
+           mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
+           setCameraDisplayOrientation();
+           Camera.Parameters params = mCamera.getParameters();
+           List<String> supportedFocusModes = params.getSupportedFocusModes();
+
+           if (supportedFocusModes != null) {
+               if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
+                   params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+               } else if (supportedFocusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+                   params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+               }
+               mCamera.setParameters(params);
+           }
+       }
+   }
 
     public int getDisplayOrientation() {
         return displayOrientation;
